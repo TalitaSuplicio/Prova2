@@ -1,0 +1,536 @@
+
+import 'package:flutter/material.dart';
+
+
+class Agenda {
+
+  String _compromisso;
+  String _endereco;
+  String _data;
+  String _horario;
+
+
+
+  Agenda(this._compromisso,this._data,this._endereco,[this._horario]);
+   
+
+}
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  final List<Agenda> lista = [];
+
+
+  MyApp() {
+    Agenda compromisso1 = Agenda("Dentista","Centro campinas","15/10/2020","10h30");
+    lista.add(compromisso1);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.pink,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: HomePage(lista),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  final List<Agenda> lista;
+
+  HomePage(this.lista);
+
+  @override
+  _HomePageState createState() => _HomePageState(lista);
+}
+
+class _HomePageState extends State<HomePage> {
+  final List<Agenda> lista;
+
+
+  _HomePageState(this.lista);
+
+
+  void _atualizarTela() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    return Scaffold(
+      drawer: NavDrawer(lista),
+      appBar: AppBar(
+        title: Text("Compromissos (${lista.length})"),
+      ),
+      body: ListView.builder(
+          itemCount: lista.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              title: Text(
+                "${lista[index]._compromisso}",
+                style: TextStyle(fontSize: 18.0),
+              ),
+              onTap: () {},
+            );
+          }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _atualizarTela,
+        tooltip: 'Atualizar',
+        child: Icon(Icons.update),
+      ),
+    );
+  }
+}
+
+class NavDrawer extends StatelessWidget {
+
+  final List lista;
+  final double _fontSize = 17.0;
+
+  NavDrawer(this.lista);
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          // Opcional
+          DrawerHeader(
+            child: Text(
+              "Menu",
+              style: TextStyle(color: Colors.white, fontSize: 25),
+            ),
+            decoration: BoxDecoration(color: Colors.pink),
+          ),
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text(
+              "Compromissos da Semana",
+              style: TextStyle(fontSize: _fontSize),
+            ),
+            onTap: () {
+              Navigator.pop(context); // Fecha o Drawer
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TelaInformacoesDaAgenda(lista),
+                ),
+              );
+            },
+          ),
+         
+          ListTile(
+            leading: Icon(Icons.person_add_alt_1_sharp),
+            title: Text(
+              "Adicionar um novo compromisso",
+              style: TextStyle(fontSize: _fontSize),
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TelaCadastrarAgenda(lista),
+                ),
+              );
+            },
+          ),
+           ListTile(
+            leading: Icon(Icons.face),
+            title: Text(
+              "Sobre",
+              style: TextStyle(fontSize: _fontSize),
+              
+   
+  
+             
+            ),
+          onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TelaSobreAgenda(),
+                ),
+              );
+            },
+          ),
+          Container(
+            padding: EdgeInsets.all(20.0),
+      
+          ),
+       
+          ],
+      ),
+    );
+  }
+}
+
+
+class TelaInformacoesDaAgenda extends StatefulWidget {
+  final List<Agenda> lista;
+
+
+  TelaInformacoesDaAgenda(this.lista);
+
+  @override
+  _TelaInformacoesDaAgenda createState() => _TelaInformacoesDaAgenda(lista);
+}
+
+class _TelaInformacoesDaAgenda extends State<TelaInformacoesDaAgenda> {
+
+  final List lista;
+  Agenda evento;
+  int index = -1;
+  double _fontSize = 18.0;
+  final compromissoController = TextEditingController();
+  final enderecoController = TextEditingController();
+  final dataController = TextEditingController();
+  final horarioController = TextEditingController();  
+  bool _edicaoHabilitada = false;
+
+
+  _TelaInformacoesDaAgenda(this.lista) {
+    if (lista.length > 0) {
+      index = 0;
+      evento = lista[0];
+      compromissoController.text = evento._compromisso;
+      enderecoController.text=evento._endereco;
+      dataController.text=evento._data;
+      horarioController.text=evento._horario;
+      
+    }
+  }
+
+ 
+  void _exibirRegistro(index) {
+    if (index >= 0 && index < lista.length) {
+      this.index = index;
+      evento = lista[index];
+      compromissoController.text = evento._compromisso;
+      enderecoController.text = evento._endereco;
+      dataController.text=evento._data;
+      horarioController.text=evento._horario;
+      
+      setState(() {});
+    }
+  }
+
+  void _atualizarDados() {
+    if (index >= 0 && index < lista.length) {
+      _edicaoHabilitada = false;
+      lista[index]._compromisso = compromissoController.text;
+      lista[index]._endereco = enderecoController.text;
+      lista[index]._data = dataController.text;
+      lista[index]._horario = horarioController.text;
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var objeto = "eventos";
+    if (evento == null) {
+      return Scaffold(
+        appBar: AppBar(title: Text(objeto)),
+        body: Column(
+          children: <Widget>[
+            Text(""),
+            Container(
+              color: Colors.blueGrey,
+              child: BackButton(),
+            ),
+          ],
+        ),
+      );
+    }
+    return Scaffold(
+      appBar: AppBar(title: Text(objeto)),
+      body: Container(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Align(
+              alignment: Alignment.center,
+              child: FloatingActionButton(
+                heroTag: null,
+                onPressed: () {
+                  _edicaoHabilitada = true;
+                  setState(() {});
+                },
+                tooltip: 'Botão',
+                child: Text("Editar"),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                enabled: _edicaoHabilitada,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Compromisso",
+                
+                ),
+                style: TextStyle(fontSize: _fontSize),
+                controller: compromissoController,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                enabled: _edicaoHabilitada,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Endereço",
+                 
+                ),
+                style: TextStyle(fontSize: _fontSize),
+                controller: enderecoController,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                enabled: _edicaoHabilitada,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Data",
+                ),
+                style: TextStyle(fontSize: _fontSize),
+                controller: dataController,
+              ),
+            ),
+          Padding(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                enabled: _edicaoHabilitada,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Horario",
+            
+                ),
+                style: TextStyle(fontSize: _fontSize),
+                controller: horarioController,
+              ),
+            ),
+            RaisedButton(
+              child: Text(
+                "Atualizar Agenda",
+                style: TextStyle(fontSize: _fontSize),
+              ),
+              onPressed: _atualizarDados,
+            ),
+            Text(
+              "[${index + 1}/${lista.length}]",
+              style: TextStyle(fontSize: 15.0),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <FloatingActionButton>[
+                  FloatingActionButton(
+                    heroTag: null,
+                    onPressed: () => _exibirRegistro(0),
+                    tooltip: 'Botão',
+                    child: Icon(Icons.first_page),
+                  ),
+                  FloatingActionButton(
+                    heroTag: null,
+                    onPressed: () => _exibirRegistro(index - 1),
+                    tooltip: 'Botão',
+                    child: Icon(Icons.navigate_before),
+                  ),
+                  FloatingActionButton(
+                    heroTag: null,
+                    onPressed: () => _exibirRegistro(index + 1),
+                    tooltip: 'Botão',
+                    child: Icon(Icons.navigate_next),
+                  ),
+                  FloatingActionButton(
+                    heroTag: null,
+                    onPressed: () => _exibirRegistro(lista.length - 1),
+                    tooltip: 'Botão',
+                    child: Icon(Icons.last_page),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TelaSobreAgenda extends StatefulWidget {
+  @override
+  _TelaSobreAgendaState createState() => _TelaSobreAgendaState();
+}
+
+class _TelaSobreAgendaState extends State<TelaSobreAgenda> {
+  
+  
+  double _fontSize=22.0;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Sobre")
+       ),
+      body:Container(
+        padding: EdgeInsets.all(16.0),
+        child:Column(
+          children:<Widget>[
+           Padding(
+           padding: EdgeInsets.fromLTRB(12,12,12,12),
+             child:Center(child: Text("App Agenda de Compromissos \n Nome: Talita Suplicio da Silva \n      RA:190008747",style: TextStyle(fontSize :_fontSize),)
+            )
+           )     
+       ]
+          )
+      )
+
+    );
+  }
+  
+}
+
+
+
+class TelaCadastrarAgenda extends StatefulWidget {
+  final List<Agenda> lista;
+
+ 
+  TelaCadastrarAgenda(this.lista);
+
+  @override
+  _TelaCadastrarAgendaState createState() =>
+      _TelaCadastrarAgendaState(lista);
+}
+
+class _TelaCadastrarAgendaState extends State<TelaCadastrarAgenda> {
+
+  final List<Agenda> lista;
+  String _compromisso = "";
+  String _endereco="";
+  String _data="";
+  String _horario="";
+  double _fontSize = 20.0;
+  final compromissoController = TextEditingController();
+  final enderecoController = TextEditingController();
+  final dataController = TextEditingController();
+  final horarioController = TextEditingController();
+
+
+
+  _TelaCadastrarAgendaState(this.lista);
+
+
+  void _cadastrarAgenda() {
+    _compromisso = compromissoController.text;
+    _endereco=enderecoController.text;
+    _data=dataController.text;
+    _horario=horarioController.text;
+      var compromisso = Agenda(_compromisso,_data,_horario,_endereco); // Cria um novo objeto
+      lista.add(compromisso);
+      compromissoController.text = "";
+      enderecoController.text = "";
+      dataController.text = "";
+      horarioController.text = "";
+     
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Atualizar Agenda"),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+              child: Text(
+                "Novo Compromisso",
+                style: TextStyle(fontSize: _fontSize),
+              ),
+            ),
+              // --- Compromisso ---
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Compromisso",
+                  // hintText: "Nome do paciente",
+                ),
+                style: TextStyle(fontSize: _fontSize),
+                controller: compromissoController,
+              ),
+            ),
+            //endereço
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Endereço",
+                  // hintText: "Nome do paciente",
+                ),
+                style: TextStyle(fontSize: _fontSize),
+                controller: enderecoController,
+              ),
+            ),
+            //Data
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Data: dia/mês/ano",
+                  // hintText: "Nome do paciente",
+                ),
+                style: TextStyle(fontSize: _fontSize),
+                controller: dataController,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "horário: exemplo:12h30",
+                  // hintText: "Nome do paciente",
+                ),
+                style: TextStyle(fontSize: _fontSize),
+                controller: horarioController,
+              ),
+            ),
+           
+          
+            RaisedButton(
+              child: Text(
+                "Atualizar Agenda",
+                style: TextStyle(fontSize: _fontSize),
+              ),
+              onPressed: _cadastrarAgenda,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  }
